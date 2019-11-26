@@ -1,12 +1,12 @@
 import math
 import pygame
-from laser import Laser
-from asteroid import Asteroid
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, player_id):
         super().__init__()
+
+        self.player_id = player_id
         self.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
         self.image = pygame.image.load('flying-rocket64_expertly_edited.png')
         self.rect = self.original_img.get_rect()
@@ -25,9 +25,24 @@ class Player(pygame.sprite.Sprite):
         self.turning_speed = 5
 
         # valjda je ovako
-        self.player_x = self.screen_w/2 - self.player_w
-        self.player_y = self.screen_h/2 - self.player_h
+        if player_id == 1:
+            self.player_x = self.screen_w/2 - self.player_w - 50
+            self.player_y = self.screen_h/2 - self.player_h
+
+        if player_id == 2:
+            self.player_x = self.screen_w/2 - self.player_w
+            self.player_y = self.screen_h/2 - self.player_h
+
+        if player_id == 3:
+            self.player_x = self.screen_w / 2 - self.player_w - 50
+            self.player_y = self.screen_h / 2 - self.player_h + 50
+
+        if player_id == 4:
+            self.player_x = self.screen_w / 2 - self.player_w
+            self.player_y = self.screen_h / 2 - self.player_h + 50
+
         self.rect = self.original_img.get_rect(center=(self.player_x, self.player_y))
+
 
         # keys pressed
         self.up_bool = False
@@ -37,39 +52,9 @@ class Player(pygame.sprite.Sprite):
         # hm
         self.lasers = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-        self.asteroid_spawn = pygame.USEREVENT + 1
+
         self.is_dead = False
         self.points = 0
-
-    def move(self, screen):
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == self.asteroid_spawn:
-                self.create_asteroid()
-            self.do_key_stuff(event)
-
-        self.draw_lasers(screen)
-        self.draw_asteroids(screen)
-        # Limit player from exiting the screen
-        self.limit_exiting()
-        self.draw(screen)
-        return True
-
-    def draw_asteroids(self, screen):
-        for asteroid in self.asteroids.sprites():
-            x, y = asteroid.rect.center
-            if x < 0 or x > self.screen_w or y < 0 or y > self.screen_h:
-                asteroid.kill()
-            asteroid.draw(screen)
-
-    def draw_lasers(self, screen):
-        for laser in self.lasers.sprites():
-            x, y = laser.rect.center
-            if x < 0 or x > self.screen_w or y < 0 or y > self.screen_h:
-                laser.kill()
-            laser.draw(screen)
 
     def limit_exiting(self):
         x, y = self.rect.center
@@ -136,58 +121,9 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         self.rotate()
         self.thrust()
-        if not self.is_dead:
-            screen.blit(self.image, self.rect)
-        my_font = pygame.font.SysFont('Vera', 30)
-        text_surface = my_font.render(str(self.points), False, (0, 0, 0))
-        screen.blit(text_surface, (0, 0))
+        screen.blit(self.image, self.rect)
+        self.limit_exiting()
 
-    def create_asteroid(self):
-        x, y = self.rect.center
-        self.asteroids.add(Asteroid(x, y))
 
-    def do_key_stuff(self, event):
-        if event.type == pygame.KEYDOWN:
 
-            if event.key == pygame.K_LEFT:
-                self.left_bool = True
-                if self.right_bool:
-                    self.rotate_degrees = 0
-                else:
-                    self.rotate_degrees = self.turning_speed
 
-            if event.key == pygame.K_RIGHT:
-                self.right_bool = True
-                if self.left_bool:
-                    self.rotate_degrees = 0
-                else:
-                    self.rotate_degrees = -self.turning_speed
-
-            if event.key == pygame.K_RCTRL:
-                self.up_bool = True
-                self.original_img = pygame.image.load('flying-rocket64.png')
-
-        if event.type == pygame.KEYUP:
-
-            if event.key == pygame.K_LEFT:
-
-                self.left_bool = False
-                if self.right_bool:
-                    self.rotate_degrees = -self.turning_speed
-                else:
-                    self.rotate_degrees = 0
-
-            if event.key == pygame.K_RIGHT:
-                self.right_bool = False
-                if self.left_bool:
-                    self.rotate_degrees = self.turning_speed
-                else:
-                    self.rotate_degrees = 0
-
-            if event.key == pygame.K_RCTRL:
-                self.up_bool = False
-                self.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
-
-            if event.key == pygame.K_SPACE:
-                x, y = self.rect.center
-                self.lasers.add(Laser(x, y, self.rotate_degrees_total))

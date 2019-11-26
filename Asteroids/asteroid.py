@@ -1,10 +1,11 @@
 import math
 import pygame
 import random
+import copy
 
 
 class Asteroid(pygame.sprite.Sprite):
-    def __init__(self, playerX, playerY):
+    def __init__(self, player):
         super().__init__()
         self.original_img = pygame.image.load('asteroid.png')
         self.image = pygame.image.load('asteroid.png')
@@ -12,44 +13,68 @@ class Asteroid(pygame.sprite.Sprite):
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.rect.center = self.get_random_coordinates()
         self.asteroid_w, self.asteroid_h = self.original_img.get_size()
-        self.player_x = playerX
-        self.player_y = playerY
+        x, y = player.rect.center
+        self.player_x = x
+        self.player_y = y
         # vidi sta ti treba
         self.speed = 700
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
+        # zatrebace posle
         self.rotate_degrees = 0
         self.rotate_degrees_total = 0
         self.turning_speed = 5
         self.degrees = 0
         self.get_angle_towards_player()
 
+    def copy(self):
+        copyobj = Asteroid(1, 1)
+        for name, attr in self.__dict__.items():
+            if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
+                copyobj.__dict__[name] = attr.copy()
+            else:
+                copyobj.__dict__[name] = copy.deepcopy(attr)
+        return copyobj
+
     def death(self, asteroid, asteroids):
         rads = asteroid.degrees
+        asteroid_two = asteroid.copy()
         if asteroid.points == 150:
             for x in range(2):
                 asteroid.points = 100
                 asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (16, 16))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+
+                asteroid_two.points = 100
+                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (16, 16))
+                asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 if x == 0:
-                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 10)) / 100
-                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 10)) / 100
+                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 5)) / 100
+                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 5)) / 100
                 if x == 1:
-                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads - 10)) / 100
-                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads - 10)) / 100
+                    asteroid_two.velocity.x = self.speed * math.cos(math.radians(rads - 5)) / 100
+                    asteroid_two.velocity.y = self.speed * math.sin(math.radians(rads - 5)) / 100
                 asteroids.add(asteroid)
+                asteroids.add(asteroid_two)
         if asteroid.points == 200:
+            rads = asteroid.degrees
+            asteroid_two = asteroid.copy()
             for x in range(2):
                 asteroid.points = 150
                 asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+
+                asteroid_two.points = 150
+                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
+                asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 if x == 0:
-                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 10)) / 100
-                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 10)) / 100
+                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 5)) / 100
+                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 5)) / 100
                 if x == 1:
-                    asteroid.velocity.x = self.speed * math.cos(math.radians(rads - 10)) / 100
-                    asteroid.velocity.y = self.speed * math.sin(math.radians(rads - 10)) / 100
+                    asteroid_two.velocity.x = self.speed * math.cos(math.radians(rads - 5)) / 100
+                    asteroid_two.velocity.y = self.speed * math.sin(math.radians(rads - 5)) / 100
                 asteroids.add(asteroid)
+                asteroids.add(asteroid_two)
 
     def get_random_coordinates(self):
         choice = random.choice([1, 2, 3])
