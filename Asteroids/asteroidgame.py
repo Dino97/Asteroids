@@ -23,6 +23,9 @@ class AsteroidGame:
         self.game_started = False
         # timed events
         self.asteroid_spawn = pygame.USEREVENT + 1
+
+        self.increase_asteroid_speed = 0
+        self.increase_player_speed = 0
     # inicijalizacija igre, resetovanje poena
 
     def start_game(self, screen):
@@ -31,9 +34,8 @@ class AsteroidGame:
         self.start_level()
         pygame.time.set_timer(self.asteroid_spawn, 1000)
 
-
     def over_screen(self, screen):
-        screen.blit(pygame.image.load('gameover.jpg'))
+        screen.blit(pygame.image.load('gameover.jpg'), (0, 0))
 
     def play(self, screen):
 
@@ -59,7 +61,15 @@ class AsteroidGame:
         self.determine_collides()
         self.draw_all_sprites(screen)
         self.draw_scores(screen)
+        self.check_game_state()
         return True
+
+    def check_game_state(self):
+        if len(self.players.sprites()) == 0:
+            self.game_over = True
+
+        if len(self.asteroids.sprites()) == 0:
+            self.level_complete = True
 
     def draw_all_sprites(self, screen):
 
@@ -86,14 +96,17 @@ class AsteroidGame:
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
         self.level_complete = False
 
+        self.increase_asteroid_speed += 50
+        self.increase_player_speed += 50
+
     def spawn_players(self):
         # mrezno programiranje imacemo neki buffer? nzm  al zasad ovako
-        self.players.add(Player(1))
+        self.players.add(Player(1, self.increase_player_speed))
 
     def spawn_asteroids(self):
         # promeni iz if u when da ne bi spawnovao samo jedan ako se iskljucuje event
         if self.num_of_asteroids > 0:
-            self.asteroids.add(Asteroid(self.players.sprites()[0]))
+            self.asteroids.add(Asteroid(self.players.sprites()[0],self.increase_asteroid_speed))
             self.num_of_asteroids -= 1
 
     def draw_scores(self, screen):
@@ -111,14 +124,19 @@ class AsteroidGame:
 
     def determine_collides(self):
         for player in self.players.sprites():
-            if pygame.sprite.spritecollideany(player, player.asteroids, collided=None) is not None:
+            if pygame.sprite.spritecollideany(player, self.asteroids, collided=None) is not None:
                 self.players.remove(player)
 
-        for asteroid in pygame.sprite.groupcollide(self.lasers, self.asteroids, 1, 1):
-            print('s')
-            #player.points += asteroid[0].points
-            #if asteroid[0].points > 100:
-                #asteroid[0].death(asteroid[0], player.asteroids)
+        collided_units = pygame.sprite.groupcollide(self.lasers, self.asteroids, 1, 1)
+        if collided_units is not None:
+            for laser, asteroid in collided_units.items():
+                if asteroid[0].points > 100:
+                    asteroid[0].death(asteroid[0], self.asteroids)
+                for player in self.players.sprites():
+                    if player.player_id == laser.player_id:
+                        player.points += asteroid[0].points
+
+
 
     def listen_to_keys(self, event, player):
         if event.type == pygame.KEYDOWN:

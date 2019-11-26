@@ -3,12 +3,12 @@ import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player_id):
+    def __init__(self, player_id, speed_increase):
         super().__init__()
 
         self.player_id = player_id
-        self.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
-        self.image = pygame.image.load('flying-rocket64_expertly_edited.png')
+        self.original_img = pygame.transform.smoothscale(pygame.image.load('galaga.jpg'), (26, 32))
+        self.image = self.original_img
         self.rect = self.original_img.get_rect()
 
         # position variables
@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.player_w, self.player_h = self.image.get_size()
 
         # movement variables
-        self.speed = 700
+        self.speed = 700 + speed_increase
         self.acceleration = self.speed*3
         self.velocity = [0.0, 0.0]
         self.top_speed = self.speed
@@ -121,7 +121,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         self.rotate()
         self.thrust()
-        screen.blit(self.image, self.rect)
+        screen.blit(self.image, self.rect, special_flags=3)
         self.limit_exiting()
 
 
