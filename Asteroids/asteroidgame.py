@@ -27,9 +27,10 @@ class AsteroidGame:
 
     def start_game(self, screen):
         self.level = 1
+        self.game_started = True
         self.start_level()
         pygame.time.set_timer(self.asteroid_spawn, 1000)
-        self.game_started = True
+
 
     def over_screen(self, screen):
         screen.blit(pygame.image.load('gameover.jpg'))
@@ -39,6 +40,7 @@ class AsteroidGame:
         if not self.game_started:
             self.start_game(screen)
 
+        #dodala sam u start_level() metodi promenu da se zapravo menja level_complete
         if self.level_complete:
             self.start_level()
 
@@ -81,13 +83,16 @@ class AsteroidGame:
         #background = self.backgrounds(self.level)
         self.spawn_players()
         self.spawn_asteroids()
+        # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
+        self.level_complete = False
 
     def spawn_players(self):
         # mrezno programiranje imacemo neki buffer? nzm  al zasad ovako
         self.players.add(Player(1))
 
     def spawn_asteroids(self):
-        if self.num_of_asteroids != 0:
+        # promeni iz if u when da ne bi spawnovao samo jedan ako se iskljucuje event
+        if self.num_of_asteroids > 0:
             self.asteroids.add(Asteroid(self.players.sprites()[0]))
             self.num_of_asteroids -= 1
 
