@@ -9,6 +9,7 @@ class AsteroidGame:
     def __init__(self):
         super().__init__()
 
+
         # game assets - pocetni nivo, igraci, asteroidi, laseri
         self.level = 0
         self.players = pygame.sprite.Group()
@@ -26,8 +27,10 @@ class AsteroidGame:
 
         self.increase_asteroid_speed = 0
         self.increase_player_speed = 0
-        self.current_background = pygame.image.load('background_level_1.png').convert()
+        self.current_background = pygame.transform.smoothscale(pygame.image.load('background_level_1.png'), (self.screen_w, self.screen_h))
+
         self.backgrounds = None
+        self.players_immune_to_damage_duration = 3000
     # inicijalizacija igre, resetovanje poena
 
     def start_game(self, screen):
@@ -37,7 +40,8 @@ class AsteroidGame:
         pygame.time.set_timer(self.asteroid_spawn, 1000)
 
     def over_screen(self, screen):
-        screen.blit(pygame.image.load('gameover.jpg'), (0, 0))
+
+        screen.blit(pygame.transform.smoothscale(pygame.image.load('gameover.jpg'), (self.screen_w, self.screen_h)), (0, 0))
 
     def play(self, screen):
 
@@ -64,11 +68,16 @@ class AsteroidGame:
 
         self.determine_collides()
         self.draw_all_sprites(screen)
-        self.draw_scores(screen)
+        self.draw_scores_and_lives(screen)
         self.check_game_state()
         return True
 
     def check_game_state(self):
+        for player in self.players.sprites():
+            if player.immune_to_damage:
+                if (pygame.time.get_ticks() - player.time_at_lost_life) >= self.players_immune_to_damage_duration:
+                    player.immune_to_damage = False
+
         if len(self.players.sprites()) == 0:
             self.game_over = True
 
@@ -98,6 +107,8 @@ class AsteroidGame:
         self.spawn_players()
         self.spawn_asteroids()
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
+        for player in self.players.sprites():
+            player.lives = 3
         self.level_complete = False
 
         self.increase_asteroid_speed += 50
@@ -113,12 +124,14 @@ class AsteroidGame:
             self.asteroids.add(Asteroid(self.players.sprites()[0],self.increase_asteroid_speed))
             self.num_of_asteroids -= 1
 
-    def draw_scores(self, screen):
+    def draw_scores_and_lives(self, screen):
         for player in self.players.sprites():
             my_font = pygame.font.SysFont('Vera', 30)
             text_surface = my_font.render(str(player.points), False, (0, 0, 0))
             if player.player_id == 1:
                 screen.blit(text_surface, (0, 0))
+                for x in range(player.lives):
+                    screen.blit(pygame.transform.rotate(player.original_img, 40), (0 + 50*x, 50), special_flags=3)
             if player.player_id == 2:
                 screen.blit(text_surface, (0, self.screen_w - 100))
             if player.player_id == 3:
@@ -129,7 +142,14 @@ class AsteroidGame:
     def determine_collides(self):
         for player in self.players.sprites():
             if pygame.sprite.spritecollideany(player, self.asteroids, pygame.sprite.collide_mask) is not None:
-                self.players.remove(player)
+                if player.immune_to_damage:
+                    continue
+                if player.lives == 1:
+                    self.players.remove(player)
+                else:
+                    player.lives -= 1
+                    player.immune_to_damage = True
+                    player.time_at_lost_life = pygame.time.get_ticks()
 
         collided_units = pygame.sprite.groupcollide(self.lasers, self.asteroids, 1, 1, pygame.sprite.collide_mask)
         if collided_units is not None:

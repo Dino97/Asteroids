@@ -8,10 +8,10 @@ class Laser(pygame.sprite.Sprite):
         super().__init__()
         self.player_id = player.player_id
 
-        self.original_img = pygame.transform.smoothscale(pygame.image.load('laser_red.png'), (8, 24))
+        self.original_img = pygame.transform.smoothscale(pygame.image.load('laser_red.png'), (4, 12))
         self.image = self.original_img
         self.rect = self.image.get_rect()
-
+        self.mask = pygame.mask.from_surface(self.image)
         x, y = player.rect.center
         self.rect.center = (x, y)
 

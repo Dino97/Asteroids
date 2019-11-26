@@ -25,7 +25,13 @@ class Player(pygame.sprite.Sprite):
         self.rotate_degrees = 0
         self.rotate_degrees_total = 0
         self.turning_speed = 5
-
+        self.immune_to_damage = False
+        self.time_at_lost_life = 0
+        self.blink_duration = 500
+        self.blinking = False
+        self.counter = 1
+        self.time = None
+        self.time_set = False
         # valjda je ovako
         if player_id == 1:
             self.player_x = self.screen_w/2 - self.player_w - 50
@@ -51,11 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.right_bool = False
         self.left_bool = False
 
-        # hm
-        self.lasers = pygame.sprite.Group()
-        self.asteroids = pygame.sprite.Group()
-
-        self.is_dead = False
+        self.lives = 3
         self.points = 0
 
     def limit_exiting(self):
@@ -125,7 +127,15 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         self.rotate()
         self.thrust()
-        screen.blit(self.image, self.rect, special_flags=3)
+        if self.immune_to_damage:
+            if not self.time_set:
+                self.time = pygame.time.get_ticks()
+                self.time_set = True
+            if (pygame.time.get_ticks() - self.time) >= self.blink_duration * self.counter:
+                self.counter += 1
+                self.blinking = not self.blinking
+        if not self.blinking:
+            screen.blit(self.image, self.rect, special_flags=3)
         self.limit_exiting()
 
 
