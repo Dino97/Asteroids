@@ -26,6 +26,8 @@ class AsteroidGame:
 
         self.increase_asteroid_speed = 0
         self.increase_player_speed = 0
+        self.current_background = pygame.image.load('background_level_1.png').convert()
+        self.backgrounds = None
     # inicijalizacija igre, resetovanje poena
 
     def start_game(self, screen):
@@ -49,6 +51,8 @@ class AsteroidGame:
         if self.game_over:
             self.over_screen(screen)
             return True
+
+        screen.blit(self.current_background, [0, 0])
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -124,10 +128,10 @@ class AsteroidGame:
 
     def determine_collides(self):
         for player in self.players.sprites():
-            if pygame.sprite.spritecollideany(player, self.asteroids, collided=None) is not None:
+            if pygame.sprite.spritecollideany(player, self.asteroids, pygame.sprite.collide_mask) is not None:
                 self.players.remove(player)
 
-        collided_units = pygame.sprite.groupcollide(self.lasers, self.asteroids, 1, 1)
+        collided_units = pygame.sprite.groupcollide(self.lasers, self.asteroids, 1, 1, pygame.sprite.collide_mask)
         if collided_units is not None:
             for laser, asteroid in collided_units.items():
                 if asteroid[0].points > 100:
@@ -135,8 +139,6 @@ class AsteroidGame:
                 for player in self.players.sprites():
                     if player.player_id == laser.player_id:
                         player.points += asteroid[0].points
-
-
 
     def listen_to_keys(self, event, player):
         if event.type == pygame.KEYDOWN:
@@ -157,7 +159,7 @@ class AsteroidGame:
 
             if event.key == pygame.K_RCTRL:
                 player.up_bool = True
-                player.original_img = pygame.image.load('flying-rocket64.png')
+                #player.original_img = pygame.image.load('flying-rocket64.png')
 
         if event.type == pygame.KEYUP:
 
@@ -178,7 +180,7 @@ class AsteroidGame:
 
             if event.key == pygame.K_RCTRL:
                 player.up_bool = False
-                player.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
+                #player.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
 
             if event.key == pygame.K_SPACE:
                 x, y = player.rect.center

@@ -27,9 +27,13 @@ class Asteroid(pygame.sprite.Sprite):
         self.degrees = 0
         self.get_angle_towards_player()
 
+        self.mask = pygame.mask.from_surface(self.image)
+
     def copy(self, asteroid):
         copyobj = Asteroid(asteroid, 0)
         for name, attr in self.__dict__.items():
+            if name == 'mask':
+                continue
             if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
                 copyobj.__dict__[name] = attr.copy()
             else:
@@ -44,10 +48,12 @@ class Asteroid(pygame.sprite.Sprite):
                 asteroid.points = 100
                 asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+                asteroid.mask = pygame.mask.from_surface(asteroid.image)
 
                 asteroid_two.points = 100
                 asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
                 asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+                asteroid_two.mask = pygame.mask.from_surface(asteroid.image)
                 if x == 0:
                     asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 5)) / 100
                     asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 5)) / 100
@@ -63,10 +69,12 @@ class Asteroid(pygame.sprite.Sprite):
                 asteroid.points = 150
                 asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (64, 64))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+                asteroid.mask = pygame.mask.from_surface(asteroid.image)
 
                 asteroid_two.points = 150
                 asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (64, 64))
                 asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
+                asteroid_two.mask = pygame.mask.from_surface(asteroid.image)
                 if x == 0:
                     asteroid.velocity.x = self.speed * math.cos(math.radians(rads + 5)) / 100
                     asteroid.velocity.y = self.speed * math.sin(math.radians(rads + 5)) / 100

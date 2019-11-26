@@ -7,9 +7,11 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         self.player_id = player_id
-        self.original_img = pygame.transform.smoothscale(pygame.image.load('galaga.jpg'), (26, 32))
+        self.original_img = pygame.transform.smoothscale(pygame.image.load('galaga.jpg'), (26, 32)).convert_alpha()
+
         self.image = self.original_img
         self.rect = self.original_img.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
 
         # position variables
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
@@ -78,6 +80,7 @@ class Player(pygame.sprite.Sprite):
         self.rotate_degrees_total %= 360
         self.image = pygame.transform.rotate(self.original_img, self.rotate_degrees_total)
         self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def thrust(self):
         # also dont know why 270
@@ -110,6 +113,7 @@ class Player(pygame.sprite.Sprite):
 
         # change position
         self.rect.center = (x, y)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def restrict_speed(self):
         adj, op = self.velocity
