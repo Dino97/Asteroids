@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         self.player_id = player_id
-        self.original_img = pygame.transform.smoothscale(pygame.image.load('galaga.jpg'), (26, 32)).convert_alpha()
+        self.original_img = pygame.transform.smoothscale(pygame.image.load('galaga.png'), (64, 48))
 
         self.image = self.original_img
         self.rect = self.original_img.get_rect()
@@ -32,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.counter = 1
         self.time = None
         self.time_set = False
+        self.color = None
         # valjda je ovako
         if player_id == 1:
             self.player_x = self.screen_w/2 - self.player_w - 50
@@ -124,9 +125,11 @@ class Player(pygame.sprite.Sprite):
             self.velocity[0] = self.top_speed*math.cos(angle)
             self.velocity[1] = self.top_speed*math.sin(angle)
 
-    def draw(self, screen):
+    def move(self):
         self.rotate()
         self.thrust()
+
+    def draw(self, screen):
         if self.immune_to_damage:
             if not self.time_set:
                 self.time = pygame.time.get_ticks()
@@ -135,7 +138,7 @@ class Player(pygame.sprite.Sprite):
                 self.counter += 1
                 self.blinking = not self.blinking
         if not self.blinking:
-            screen.blit(self.image, self.rect, special_flags=3)
+            screen.blit(self.image, self.rect)
         self.limit_exiting()
 
 

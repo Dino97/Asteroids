@@ -38,9 +38,11 @@ class Laser(pygame.sprite.Sprite):
         self.velocity.x = self.speed * math.cos(rads)/100
         self.velocity.y = self.speed * math.sin(rads)/100
 
-    def draw(self, screen):
+    def move(self):
         x, y = self.rect.center
         x -= self.velocity.x
         y += self.velocity.y
         self.rect.center = (x, y)
+
+    def draw(self, screen):
         screen.blit(self.image, self.rect.center)
