@@ -450,6 +450,7 @@ class AsteroidGame:
                         self.players.add(self.players_dead.sprites()[0])
                         self.players_dead.empty()
                     if self.counter == 1:
+                        self.players.empty()
                         self.game_over = False
                         self.main_menu = True
                         self.counter = 0
