@@ -33,4 +33,4 @@ while running:
     # always update it
     pygame.display.update()
 
-    game_clock.tick(30)
+    game_clock.tick(1000)
