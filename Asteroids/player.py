@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         # movement variables
         self.speed = 700 + speed_increase
         self.acceleration = self.speed*3
-        self.velocity = [0.0, 0.0]
+        self.velocity = [0.00, 0.00]
         self.top_speed = self.speed
         self.rotate_degrees = 0
         self.rotate_degrees_total = 0
@@ -53,7 +53,6 @@ class Player(pygame.sprite.Sprite):
 
         self.rect = self.original_img.get_rect(center=(self.player_x, self.player_y))
 
-
         # keys pressed
         self.up_bool = False
         self.right_bool = False
@@ -64,18 +63,23 @@ class Player(pygame.sprite.Sprite):
 
     def limit_exiting(self):
         x, y = self.rect.center
+        limit = False
         if x <= 0:
             x = 0 + 5
+            limit = True
 
         elif x >= self.screen_w - self.player_w:
             x = self.screen_w - self.player_w
-
+            limit = True
         if y <= 0:
             y = 0 + 5
-
+            limit = True
         elif y >= self.screen_h - self.player_h:
             y = self.screen_h - self.player_h
-
+            limit = True
+        if limit:
+            self.velocity[0] = 0.00
+            self.velocity[1] = 0.00
         self.rect.center = (x, y)
 
     def rotate(self):
