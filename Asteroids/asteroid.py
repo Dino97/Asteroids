@@ -18,7 +18,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.player_y = y
         # vidi sta ti treba
 
-        self.speed = 700 + speed_increase
+        self.speed = 500 + speed_increase
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
         # zatrebace posle

@@ -160,3 +160,15 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.points = 0
 
+    def cleanfornextlevel(self):
+        self.velocity = [0.0, 0.0]
+        self.rotate_degrees_total = 0
+        self.immune_to_damage = False
+        self.time_at_lost_life = 0
+        self.counter = 1
+        self.time = None
+        self.time_set = False
+        self.player_x = self.screen_w / 2 - self.player_w - 50
+        self.player_y = self.screen_h / 2 - self.player_h
+        self.lives = 3
+

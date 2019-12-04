@@ -59,21 +59,19 @@ class AsteroidGame:
             screens.choose_your_own_player_screen(self, screen)
             return True
 
-        if self.completed_pause:
-            screens.level_clear_and_complete_screen(self, screen)
-            return True
-
         if self.game_over:
             screens.over_screen(self, screen)
             return True
 
         if not self.game_started:
             self.start_game(screen)
+            return True
 
         #dodala sam u start_level() metodi promenu da se zapravo menja level_complete
 
-        if self.level_complete:
+        if self.level_complete and not self.completed_pause:
             self.start_level()
+            return True
 
         screen.blit(self.current_background, [0, 0])
         for event in pygame.event.get():
@@ -92,6 +90,9 @@ class AsteroidGame:
         self.draw_all_sprites(screen)
         self.draw_scores_and_lives(screen)
         self.check_game_state()
+        if self.completed_pause:
+            screens.level_clear_and_complete_screen(self, screen)
+
         return True
 
     def start_game(self, screen):
@@ -117,8 +118,10 @@ class AsteroidGame:
 
         if len(self.asteroids.sprites()) == 0:
             self.level_complete = True
+            if not self.completed_pause:
+                self.time = pygame.time.get_ticks()
             self.completed_pause = True
-            self.time = pygame.time.get_ticks()
+
 
         self.counter = 0
 
@@ -157,16 +160,17 @@ class AsteroidGame:
         self.spawn_asteroids()
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
         for player in self.players.sprites():
-            player.lives = 3
+            player.cleanfornextlevel()
         self.level_complete = False
 
-        self.increase_asteroid_speed += 50
-        self.increase_player_speed += 50
+        self.increase_asteroid_speed = self.level * 50
+        self.increase_player_speed = self.level * 50
         pygame.time.set_timer(self.asteroid_spawn, 1000)
         pygame.time.set_timer(self.move_sprites, 35)
 
     def spawn_asteroids(self):
         # promeni iz if u when da ne bi spawnovao samo jedan ako se iskljucuje event
+
         if self.num_of_asteroids > 0 and not self.game_pause:
             self.asteroids.add(Asteroid(self.players.sprites()[0],self.increase_asteroid_speed))
             self.num_of_asteroids -= 1

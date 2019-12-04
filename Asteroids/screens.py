@@ -60,7 +60,6 @@ def choose_your_own_player_screen(self, screen):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         if self.player_name != "":
-                            self.player_name = self.player_name[:-1]
                             self.player_name_chosen = True
                     elif event.key == pygame.K_BACKSPACE:
                         self.player_name = self.player_name[:-1]
@@ -110,7 +109,8 @@ def choose_your_own_player_screen(self, screen):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         self.player_color = self.player_pictures[self.counter]
-                        self.player_color_chosen = True
+                        self.player_color_chosen = False
+                        self.player_name_chosen = False
                         self.choose_your_own_player = False
                         self.players.add(Player(1, 0, self.player_name, self.player_color))
                     if event.key == pygame.K_LEFT:
@@ -192,16 +192,17 @@ def over_screen(self, screen):
                     self.counter -= 1
             if event.key == pygame.K_RETURN:
                 if self.counter == 0:
-                    self.game_over = False
                     self.game_started = False
                     self.players_dead.sprites()[0].clean()
                     self.players.add(self.players_dead.sprites()[0])
-                    self.players_dead.empty()
                 if self.counter == 1:
                     self.players.empty()
-                    self.game_over = False
                     self.main_menu = True
                     self.counter = 0
                 if self.counter == 2:
                     pygame.quit()
                     sys.exit()
+                self.game_over = False
+                self.game_started = False
+                self.players_dead.empty()
+                self.player_name = ""
