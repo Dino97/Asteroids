@@ -1,6 +1,10 @@
 import pygame
 from asteroidgame import AsteroidGame
 
+from engine.game import Game
+from engine.gameobject import GameObject
+from engine.component import Component
+
 # Initialize
 pygame.init()
 pygame.font.init()
@@ -25,12 +29,24 @@ running = True
 while running:
     # background color - needs to be first
 
-    screen.fill((128, 128, 128))
+    #screen.fill((128, 128, 128))
 
     # main loop with events
-    running = asteroid_game.play(screen)
+    #running = asteroid_game.play(screen)
 
     # always update it
-    pygame.display.update()
+    #pygame.display.update()
 
-    game_clock.tick(60)
+    #game_clock.tick(60)
+
+    game = Game()
+
+    comp = Component()
+    comp.name = "Sprite"
+
+    go = GameObject()
+    go.add_component(comp)
+
+    game.loadedscene.gameobjects.append(go)
+
+    game.start()
