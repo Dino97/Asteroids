@@ -3,7 +3,7 @@ import pygame
 from player import Player
 
 def main_menu_screen(self, screen):
-    screen.blit(pygame.transform.smoothscale(pygame.image.load('idiote.png'), (self.screen_w, self.screen_h)), [0, 0])
+    screen.blit(pygame.transform.smoothscale(pygame.image.load('images/idiote.png'), (self.screen_w, self.screen_h)), [0, 0])
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -16,12 +16,12 @@ def main_menu_screen(self, screen):
                 if self.counter > 0:
                     self.counter -= 1
             if event.key == pygame.K_RETURN:
-                if self.counter == 0:
+                if self.counter == 0:   # Singleplayer
                     self.main_menu = False
                     self.choose_your_own_player = True
-                if self.counter == 1:
+                if self.counter == 1:   # Multiplayer
                     continue
-                if self.counter == 2:
+                if self.counter == 2:   # Quit
                     pygame.quit()
                     sys.exit()
 
@@ -46,7 +46,7 @@ def main_menu_screen(self, screen):
 
 
 def choose_your_own_player_screen(self, screen):
-        screen.blit(pygame.transform.smoothscale(pygame.image.load('idiote.png'), (self.screen_w, self.screen_h)),
+        screen.blit(pygame.transform.smoothscale(pygame.image.load('images/idiote.png'), (self.screen_w, self.screen_h)),
                     [0, 0])
         my_font = pygame.font.Font('Fonts//ARCADECLASSIC.TTF', 20)
         text_surface = my_font.render("ENTER", False, (255, 255, 255))
@@ -81,26 +81,33 @@ def choose_your_own_player_screen(self, screen):
             second_b = self.player_pictures_b[1]
             third_b = self.player_pictures_b[2]
             fourth_b = self.player_pictures_b[3]
-            pygame.draw.rect(first_b, (255, 0, 0), first_b.get_rect(), 3)
-            pygame.draw.rect(second_b, (255, 0, 0), second_b.get_rect(), 3)
-            pygame.draw.rect(third_b, (255, 0, 0), third_b.get_rect(), 3)
-            pygame.draw.rect(fourth_b, (255, 0, 0), fourth_b.get_rect(), 3)
+
+            pygame.draw.rect(first_b, (255, 0, 0), first_b.get_rect(), 1)
+            pygame.draw.rect(second_b, (255, 0, 0), second_b.get_rect(), 1)
+            pygame.draw.rect(third_b, (255, 0, 0), third_b.get_rect(), 1)
+            pygame.draw.rect(fourth_b, (255, 0, 0), fourth_b.get_rect(), 1)
+
+            pygame.transform.scale(first_b, (64, 64))
+
             if self.counter == 0:
-                screen.blit(first_b, first_b.get_rect(topleft=(self.screen_w / 2 - 64, self.screen_h / 2 - 64)))
+                screen.blit(pygame.transform.scale(first_b, (64, 64)), first_b.get_rect(topleft=(self.screen_w / 2 - 48, self.screen_h / 2 - 48)))
             else:
-                screen.blit(first, first.get_rect(topleft=(self.screen_w / 2 - 64, self.screen_h / 2 - 64)))
+                screen.blit(pygame.transform.scale(first, (64, 64)), first.get_rect(topleft=(self.screen_w / 2 - 48, self.screen_h / 2 - 48)))
+
             if self.counter == 1:
-                screen.blit(second_b, second.get_rect(topleft=(self.screen_w / 2, self.screen_h / 2 - 64)))
+                screen.blit(pygame.transform.scale(second_b, (64, 64)), second.get_rect(topleft=(self.screen_w / 2 + 48, self.screen_h / 2 - 48)))
             else:
-                screen.blit(second, second.get_rect(topleft=(self.screen_w / 2, self.screen_h / 2 - 64)))
+                screen.blit(pygame.transform.scale(second, (64, 64)), second.get_rect(topleft=(self.screen_w / 2 + 48, self.screen_h / 2 - 48)))
+
             if self.counter == 2:
-                screen.blit(third_b, third.get_rect(topleft=(self.screen_w / 2 - 64, self.screen_h / 2)))
+                screen.blit(pygame.transform.scale(third_b, (64, 64)), third.get_rect(topleft=(self.screen_w / 2 - 48, self.screen_h / 2 + 48)))
             else:
-                screen.blit(third, third.get_rect(topleft=(self.screen_w / 2 - 64, self.screen_h / 2)))
+                screen.blit(pygame.transform.scale(third, (64, 64)), third.get_rect(topleft=(self.screen_w / 2 - 48, self.screen_h / 2 + 48)))
+
             if self.counter == 3:
-                screen.blit(fourth_b, fourth.get_rect(topleft=(self.screen_w / 2 , self.screen_h / 2)))
+                screen.blit(pygame.transform.scale(fourth_b, (64, 64)), fourth.get_rect(topleft=(self.screen_w / 2 + 48, self.screen_h / 2 + 48)))
             else:
-                screen.blit(fourth, fourth.get_rect(topleft=(self.screen_w / 2 , self.screen_h / 2)))
+                screen.blit(pygame.transform.scale(fourth, (64, 64)), fourth.get_rect(topleft=(self.screen_w / 2 + 48, self.screen_h / 2 + 48)))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

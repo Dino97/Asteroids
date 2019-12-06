@@ -8,7 +8,7 @@ class Laser(pygame.sprite.Sprite):
         super().__init__()
         self.player_id = player.player_id
 
-        self.original_img = pygame.transform.smoothscale(pygame.image.load('laser_red.png'), (4, 12))
+        self.original_img = pygame.transform.smoothscale(pygame.image.load('images/laser_red.png'), (4, 12))
         self.image = self.original_img
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -18,7 +18,7 @@ class Laser(pygame.sprite.Sprite):
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.laser_w, self.laser_h = self.image.get_size()
 
-        self.speed = 700
+        self.speed = 1700
         self.acceleration = self.speed * 3
 
         self.velocity = pygame.Vector2()

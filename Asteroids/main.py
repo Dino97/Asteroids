@@ -15,11 +15,11 @@ asteroid_game = AsteroidGame()
 
 
 # set icon
-icon = pygame.image.load('flying-rocket.png')
+icon = pygame.image.load('images/flying-rocket.png')
 pygame.display.set_icon(icon)
 
 # set window name
-pygame.display.set_caption("Asteroids....Okay")
+pygame.display.set_caption("Asteroids")
 
 running = True
 while running:
@@ -33,4 +33,4 @@ while running:
     # always update it
     pygame.display.update()
 
-    game_clock.tick(1000)
+    game_clock.tick(60)

@@ -5,15 +5,21 @@ import pygame
 from player import Player
 from laser import Laser
 from asteroid import Asteroid
+import server
+
+BATTLESHIP1_PATH = "images/spaceships/battleship1.png"
+BATTLESHIP2_PATH = "images/spaceships/battleship2.png"
+BATTLESHIP3_PATH = "images/spaceships/battleship3.png"
+BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 
 class AsteroidGame:
     def __init__(self):
         super().__init__()
 
-        self.player_pictures = [pygame.image.load("spaceships/one.png"), pygame.image.load("spaceships/two.png"), pygame.image.load("spaceships/three.png"), pygame.image.load("spaceships/four.png")]
-        self.player_pictures_b = [pygame.image.load("spaceships/one.png"), pygame.image.load("spaceships/two.png"),
-                                pygame.image.load("spaceships/three.png"), pygame.image.load("spaceships/four.png")]
+        self.player_pictures = [pygame.image.load(BATTLESHIP1_PATH), pygame.image.load(BATTLESHIP2_PATH), pygame.image.load(BATTLESHIP3_PATH), pygame.image.load(BATTLESHIP4_PATH)]
+        self.player_pictures_b = [pygame.image.load(BATTLESHIP1_PATH), pygame.image.load(BATTLESHIP2_PATH), pygame.image.load(BATTLESHIP3_PATH), pygame.image.load(BATTLESHIP4_PATH)]
+
         # game assets - pocetni nivo, igraci, asteroidi, laseri
         self.level = 0
         self.players = pygame.sprite.Group()
@@ -27,12 +33,13 @@ class AsteroidGame:
         self.game_over = False
         self.level_complete = True
         self.game_started = False
+
         # timed events
         self.asteroid_spawn = pygame.USEREVENT + 1
         self.move_sprites = pygame.USEREVENT + 2
         self.increase_asteroid_speed = 0
         self.increase_player_speed = 0
-        self.current_background = pygame.transform.smoothscale(pygame.image.load('background_level_1.png'), (self.screen_w, self.screen_h))
+        self.current_background = pygame.transform.smoothscale(pygame.image.load('images/background_level_1.png'), (self.screen_w, self.screen_h))
 
         self.backgrounds = None
         self.players_immune_to_damage_duration = 3000
@@ -43,7 +50,7 @@ class AsteroidGame:
         self.game_pause = False
 
         self.main_menu = True
-        self.player_icon = pygame.transform.smoothscale(pygame.image.load('galaga.png'), (64, 48))
+        self.player_icon = pygame.transform.smoothscale(pygame.image.load('images/galaga.png'), (64, 48))
         self.choose_your_own_player = False
         self.player_name = ""
         self.player_name_chosen = False
@@ -96,7 +103,6 @@ class AsteroidGame:
         return True
 
     def start_game(self, screen):
-
         self.level = 1
         self.game_started = True
         # move self.players.add(Player(1, 0))
@@ -230,9 +236,8 @@ class AsteroidGame:
                 else:
                     player.rotate_degrees = -player.turning_speed
 
-            if event.key == pygame.K_RCTRL:
+            if event.key == pygame.K_LCTRL:
                 player.up_bool = True
-                #player.original_img = pygame.image.load('flying-rocket64.png')
 
         if event.type == pygame.KEYUP:
 
@@ -251,12 +256,10 @@ class AsteroidGame:
                 else:
                     player.rotate_degrees = 0
 
-            if event.key == pygame.K_RCTRL:
+            if event.key == pygame.K_LCTRL:
                 player.up_bool = False
                 #player.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
 
             if event.key == pygame.K_SPACE:
                 x, y = player.rect.center
                 self.lasers.add(Laser(player))
-
-

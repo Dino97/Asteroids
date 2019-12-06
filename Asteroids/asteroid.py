@@ -7,8 +7,8 @@ import copy
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self, player, speed_increase):
         super().__init__()
-        self.original_img = pygame.image.load('asteroid.png')
-        self.image = pygame.image.load('asteroid.png')
+        self.original_img = pygame.image.load('images/asteroid.png')
+        self.image = pygame.image.load('images/asteroid.png')
         self.rect = self.original_img.get_rect()
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.rect.center = self.get_random_coordinates()
@@ -47,12 +47,12 @@ class Asteroid(pygame.sprite.Sprite):
         if asteroid.points == 150:
             for x in range(2):
                 asteroid.points = 100
-                asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
+                asteroid.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (32, 32))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 asteroid.mask = pygame.mask.from_surface(asteroid.image)
 
                 asteroid_two.points = 100
-                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
+                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (32, 32))
                 asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 asteroid_two.mask = pygame.mask.from_surface(asteroid.image)
                 if x == 0:
@@ -68,12 +68,12 @@ class Asteroid(pygame.sprite.Sprite):
             asteroid_two = asteroid.copy(asteroid)
             for x in range(2):
                 asteroid.points = 150
-                asteroid.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (64, 64))
+                asteroid.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (64, 64))
                 asteroid.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 asteroid.mask = pygame.mask.from_surface(asteroid.image)
 
                 asteroid_two.points = 150
-                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (64, 64))
+                asteroid_two.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (64, 64))
                 asteroid_two.rect = asteroid.image.get_rect(center=asteroid.rect.center)
                 asteroid_two.mask = pygame.mask.from_surface(asteroid.image)
                 if x == 0:
@@ -89,13 +89,13 @@ class Asteroid(pygame.sprite.Sprite):
         choice = random.choice([1, 2, 3])
 
         if choice == 1:
-            self.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (96, 96))
+            self.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (96, 96))
             self.points = 200
         if choice == 2:
-            self.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (64, 64))
+            self.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (64, 64))
             self.points = 150
         if choice == 3:
-            self.image = pygame.transform.smoothscale(pygame.image.load('asteroid.png'), (32, 32))
+            self.image = pygame.transform.smoothscale(pygame.image.load('images/asteroid.png'), (32, 32))
             self.points = 100
 
         self.rect = self.image.get_rect()
