@@ -1,17 +1,23 @@
+from engine.component import Component
+from engine.components.transform import Transform
 
 
 class GameObject:
     def __init__(self):
-        self.components = {}
+        self.components = {"Transform": Transform()}
+        self.transform = self.components["Transform"]
 
     def add_component(self, component):
-        print("adding component: ", component)
-        self.components[component.name] = component
+        assert issubclass(component.__class__, Component)
+        self.components[component.__class__.__name__] = component
+        component.gameobject = self
 
     def get_component(self, component_name):
-        print("getting component: ", component_name)
-        return self.components[component_name]
+        if component_name in self.components:
+            return self.components[component_name]
+
+        return None
 
     def remove_component(self, component_name):
-        print("removing component: ", component_name)
-        self.components[component_name] = None
+        if component_name in self.components:
+            self.components[component_name] = None
