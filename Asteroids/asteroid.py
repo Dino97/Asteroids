@@ -101,7 +101,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         choice = random.choice([1, 2, 3, 4])
-        # DELUXE SELJANCURA
+
         if choice == 1:
             return 0 + 5, random.randint(0, self.screen_h)
         elif choice == 2:
@@ -111,7 +111,7 @@ class Asteroid(pygame.sprite.Sprite):
         elif choice == 4:
             return random.randint(0, self.screen_w), self.screen_h - 5
 
-    def get_angle_towards_player(self, again = None):
+    def get_angle_towards_player(self):
         x, y = self.rect.center
         dx = x - self.player_x
         dy = y - self.player_y
@@ -136,4 +136,3 @@ class Asteroid(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.center)
-

@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         self.player_id = player_id
-        self.original_img = pygame.transform.smoothscale(picture, (64, 48))
+        self.original_img = pygame.transform.scale(picture, (64, 64))
 
         self.image = self.original_img
         self.rect = self.original_img.get_rect()
@@ -64,10 +64,10 @@ class Player(pygame.sprite.Sprite):
     def limit_exiting(self):
         x, y = self.rect.center
         limit = False
+
         if x <= 0:
             x = 0 + 5
             limit = True
-
         elif x >= self.screen_w - self.player_w:
             x = self.screen_w - self.player_w
             limit = True
@@ -77,9 +77,11 @@ class Player(pygame.sprite.Sprite):
         elif y >= self.screen_h - self.player_h:
             y = self.screen_h - self.player_h
             limit = True
+
         if limit:
             self.velocity[0] = 0.00
             self.velocity[1] = 0.00
+
         self.rect.center = (x, y)
 
     def rotate(self):
@@ -142,8 +144,10 @@ class Player(pygame.sprite.Sprite):
             if (pygame.time.get_ticks() - self.time) >= self.blink_duration * self.counter:
                 self.counter += 1
                 self.blinking = not self.blinking
+
         if not self.blinking:
             screen.blit(self.image, self.rect)
+
         self.limit_exiting()
 
     def clean(self):
@@ -171,4 +175,3 @@ class Player(pygame.sprite.Sprite):
         self.player_x = self.screen_w / 2 - self.player_w - 50
         self.player_y = self.screen_h / 2 - self.player_h
         self.lives = 3
-

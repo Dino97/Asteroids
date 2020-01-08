@@ -5,7 +5,6 @@ import pygame
 from player import Player
 from laser import Laser
 from asteroid import Asteroid
-import server
 
 BATTLESHIP1_PATH = "images/spaceships/battleship1.png"
 BATTLESHIP2_PATH = "images/spaceships/battleship2.png"
@@ -15,10 +14,14 @@ BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 class AsteroidGame:
     def __init__(self):
-        super().__init__()
+        self.player_pictures = [
+            pygame.image.load(BATTLESHIP1_PATH),
+            pygame.image.load(BATTLESHIP2_PATH),
+            pygame.image.load(BATTLESHIP3_PATH),
+            pygame.image.load(BATTLESHIP4_PATH)]
 
-        self.player_pictures = [pygame.image.load(BATTLESHIP1_PATH), pygame.image.load(BATTLESHIP2_PATH), pygame.image.load(BATTLESHIP3_PATH), pygame.image.load(BATTLESHIP4_PATH)]
-        self.player_pictures_b = [pygame.image.load(BATTLESHIP1_PATH), pygame.image.load(BATTLESHIP2_PATH), pygame.image.load(BATTLESHIP3_PATH), pygame.image.load(BATTLESHIP4_PATH)]
+        self.number_of_players = 1
+        self.number_of_players_set = False
 
         # game assets - pocetni nivo, igraci, asteroidi, laseri
         self.level = 0
@@ -27,7 +30,6 @@ class AsteroidGame:
         self.lasers = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.num_of_asteroids = 0
-        # self.backgrounds = None  # se ucitava iz fajlova kao niz imageloadova
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
 
         self.game_over = False
@@ -53,9 +55,8 @@ class AsteroidGame:
         self.player_icon = pygame.transform.smoothscale(pygame.image.load('images/galaga.png'), (64, 48))
         self.choose_your_own_player = False
         self.player_name = ""
-        self.player_name_chosen = False
-        self.player_color = ""
-        self.player_color_chosen = False
+        self.player_names = ["", "", "", ""]
+        self.player_colors = [-1, -1, -1, -1]
 
     def play(self, screen):
         if self.main_menu:
@@ -74,28 +75,28 @@ class AsteroidGame:
             self.start_game(screen)
             return True
 
-        #dodala sam u start_level() metodi promenu da se zapravo menja level_complete
+        # dodala sam u start_level() metodi promenu da se zapravo menja level_complete
 
         if self.level_complete and not self.completed_pause:
             self.start_level()
             return True
 
         screen.blit(self.current_background, [0, 0])
-        for event in pygame.event.get():
 
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-            if event.type == self.asteroid_spawn:
+            elif event.type == self.asteroid_spawn:
                 self.spawn_asteroids()
-            if event.type == self.move_sprites:
-                self.move_all_sprites()
-            self.listen_to_keys(event, self.players.sprites()[0])  # zasad samo jedan igrac posto tek kad napravimo mrezno sa vise igraca
+            elif event.type == self.move_sprites:
+                self._move_all_sprites()
 
-        self.determine_collides()
-        #if not self.game_pause:
-            #self.move_all_sprites()
-        self.draw_all_sprites(screen)
-        self.draw_scores_and_lives(screen)
+            for i in range(0, self.number_of_players):
+                self.listen_to_keys(event, self.players.sprites()[i])  # zasad samo jedan igrac posto tek kad napravimo mrezno sa vise igraca
+
+        self._determine_collides()
+        self._draw_all_sprites(screen)
+        self._draw_scores_and_lives(screen)
         self.check_game_state()
         if self.completed_pause:
             screens.level_clear_and_complete_screen(self, screen)
@@ -128,13 +129,12 @@ class AsteroidGame:
                 self.time = pygame.time.get_ticks()
             self.completed_pause = True
 
-
         self.counter = 0
 
-    def draw_all_sprites(self, screen):
+    def _draw_all_sprites(self, screen):
 
         for player in self.players.sprites():
-            player.draw(screen) # svaki igrac sebe ogranici da ne izadje
+            player.draw(screen)  # svaki igrac sebe ogranici da ne izadje
 
         for asteroid in self.asteroids.sprites():
             # make bounce logic
@@ -146,7 +146,7 @@ class AsteroidGame:
                 laser.kill()
             laser.draw(screen)
 
-    def move_all_sprites(self):
+    def _move_all_sprites(self):
         for player in self.players.sprites():
             player.move() # svaki igrac sebe ogranici da ne izadje
 
@@ -181,22 +181,20 @@ class AsteroidGame:
             self.asteroids.add(Asteroid(self.players.sprites()[0],self.increase_asteroid_speed))
             self.num_of_asteroids -= 1
 
-    def draw_scores_and_lives(self, screen):
-        for player in self.players.sprites():
-            my_font = pygame.font.SysFont('Vera', 30)
-            text_surface = my_font.render(str(player.points), False, (0, 0, 0))
-            if player.player_id == 1:
-                screen.blit(text_surface, (0, 0))
-                for x in range(player.lives):
-                    screen.blit(pygame.transform.rotate(player.original_img, 40), (0 + 50*x, 50))
-            if player.player_id == 2:
-                screen.blit(text_surface, (0, self.screen_w - 100))
-            if player.player_id == 3:
-                screen.blit(text_surface, (self.screen_h - 100, 0))
-            if player.player_id == 4:
-                screen.blit(text_surface, (self.screen_h - 100, self.screen_w - 100))
+    def _draw_scores_and_lives(self, screen):
+        my_font = pygame.font.SysFont('Vera', 30)
 
-    def determine_collides(self):
+        for player in self.players.sprites():
+            serial_num = player.player_id - 1
+
+            text_surface = my_font.render(player.name + ": " + str(player.points), False, (0, 0, 0))
+            section_height = text_surface.get_height() + self.player_pictures[serial_num].get_height()
+            screen.blit(text_surface, (0, serial_num * section_height))
+
+            for x in range(player.lives):
+                screen.blit(self.player_pictures[serial_num], (32*x, serial_num * section_height + text_surface.get_height()))
+
+    def _determine_collides(self):
         for player in self.players.sprites():
             if pygame.sprite.spritecollideany(player, self.asteroids, pygame.sprite.collide_mask) is not None:
                 if player.immune_to_damage:
