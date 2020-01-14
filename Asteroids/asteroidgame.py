@@ -13,7 +13,10 @@ BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 
 class AsteroidGame:
+    debug = True
+
     def __init__(self):
+
         self.player_pictures = [
             pygame.image.load(BATTLESHIP1_PATH),
             pygame.image.load(BATTLESHIP2_PATH),
@@ -160,7 +163,7 @@ class AsteroidGame:
     # pocetak svakog nivoa, ovde ce se hendlovati promena nivoa i brzine itd
     def start_level(self):
         self.level = self.level + 1  # treba da se ubaci mod 25 za infinite loop
-        self.num_of_asteroids = 10
+        self.num_of_asteroids = 2
         # background = self.backgrounds(self.level)
 
         self.spawn_asteroids()

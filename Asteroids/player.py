@@ -1,5 +1,6 @@
 import math
 import pygame
+import asteroidgame
 
 
 class Player(pygame.sprite.Sprite):
@@ -18,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.player_w, self.player_h = self.image.get_size()
 
         # movement variables
-        self.speed = 700 + speed_increase
+        self.speed = 300 + speed_increase
         self.acceleration = self.speed*3
         self.velocity = [0.00, 0.00]
         self.top_speed = self.speed
@@ -27,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.turning_speed = 5
         self.immune_to_damage = False
         self.time_at_lost_life = 0
-        self.blink_duration = 500
+        self.blink_duration = 100
         self.blinking = False
         self.counter = 1
         self.time = None
@@ -63,24 +64,20 @@ class Player(pygame.sprite.Sprite):
 
     def limit_exiting(self):
         x, y = self.rect.center
-        limit = False
 
-        if x <= 0:
-            x = 0 + 5
-            limit = True
-        elif x >= self.screen_w - self.player_w:
-            x = self.screen_w - self.player_w
-            limit = True
-        if y <= 0:
-            y = 0 + 5
-            limit = True
-        elif y >= self.screen_h - self.player_h:
-            y = self.screen_h - self.player_h
-            limit = True
+        # left edge
+        if x < -self.player_w / 2:
+            x = self.screen_w + self.player_w / 2
+        # right edge
+        elif x > self.screen_w + self.player_w / 2:
+            x = -self.player_w / 2
 
-        if limit:
-            self.velocity[0] = 0.00
-            self.velocity[1] = 0.00
+        # top edge
+        if y < -self.player_h / 2:
+            y = self.screen_h + self.player_h / 2
+        # bottom edge
+        elif y > self.screen_h + self.player_h / 2:
+            y = -self.player_h / 2
 
         self.rect.center = (x, y)
 
@@ -147,6 +144,9 @@ class Player(pygame.sprite.Sprite):
 
         if not self.blinking:
             screen.blit(self.image, self.rect)
+
+        if asteroidgame.AsteroidGame.debug:
+            pygame.draw.rect(pygame.display.get_surface(), (150, 0, 30), self.rect, 1)
 
         self.limit_exiting()
 

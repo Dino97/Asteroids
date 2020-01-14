@@ -2,6 +2,7 @@ import math
 import pygame
 import random
 import copy
+import asteroidgame
 
 
 class Asteroid(pygame.sprite.Sprite):
@@ -10,15 +11,14 @@ class Asteroid(pygame.sprite.Sprite):
         self.original_img = pygame.image.load('images/asteroid.png')
         self.image = pygame.image.load('images/asteroid.png')
         self.rect = self.original_img.get_rect()
-        self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
-        self.rect.center = self.get_random_coordinates()
-        self.asteroid_w, self.asteroid_h = self.original_img.get_size()
-        x, y = player.rect.center
-        self.player_x = x
-        self.player_y = y
-        # vidi sta ti treba
 
-        self.speed = 500 + speed_increase
+        self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
+        self.asteroid_w, self.asteroid_h = self.original_img.get_size()
+        self.player_x, self.player_y = player.rect.center
+
+        self.rect.center = self.get_random_coordinates()
+
+        self.speed = 150 + speed_increase
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
         # zatrebace posle
@@ -32,6 +32,7 @@ class Asteroid(pygame.sprite.Sprite):
 
     def copy(self, asteroid):
         copyobj = Asteroid(asteroid, 0)
+
         for name, attr in self.__dict__.items():
             if name == 'mask':
                 continue
@@ -39,6 +40,7 @@ class Asteroid(pygame.sprite.Sprite):
                 copyobj.__dict__[name] = attr.copy()
             else:
                 copyobj.__dict__[name] = copy.deepcopy(attr)
+
         return copyobj
 
     def death(self, asteroid, asteroids):
@@ -125,14 +127,30 @@ class Asteroid(pygame.sprite.Sprite):
 
     def move(self):
         x, y = self.rect.center
-        if y >= self.screen_h or y <= 0:
-            self.velocity.y = - self.velocity.y
-        if x >= self.screen_w or x <= 0:
-            self.velocity.x = - self.velocity.x
+
+        # bottom edge
+        if y >= self.screen_h + self.asteroid_h / 2:
+            y = -self.asteroid_h / 2
+            print("bottom")
+        # top edge
+        elif y < -self.asteroid_h / 2:
+            y = self.screen_h + self.asteroid_h / 2
+            print("top")
+        # left edge
+        if x < -self.asteroid_w / 2:
+            x = self.screen_w + self.asteroid_w / 2
+            print("left")
+        # right edge
+        elif x >= self.screen_w + self.asteroid_w / 2:
+            x = -self.asteroid_w / 2
+            print("right")
 
         x += self.velocity.x
         y += self.velocity.y
         self.rect.center = (x, y)
 
     def draw(self, screen):
+        if asteroidgame.AsteroidGame.debug:
+            pygame.draw.rect(pygame.display.get_surface(), (150, 0, 30), self.rect, 1)
+
         screen.blit(self.image, self.rect.center)
