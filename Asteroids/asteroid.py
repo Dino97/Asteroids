@@ -129,7 +129,7 @@ class Asteroid(pygame.sprite.Sprite):
         x, y = self.rect.center
 
         # bottom edge
-        if y >= self.screen_h + self.asteroid_h / 2:
+        if y > self.screen_h + self.asteroid_h / 2:
             y = -self.asteroid_h / 2
             print("bottom")
         # top edge
@@ -141,7 +141,7 @@ class Asteroid(pygame.sprite.Sprite):
             x = self.screen_w + self.asteroid_w / 2
             print("left")
         # right edge
-        elif x >= self.screen_w + self.asteroid_w / 2:
+        elif x > self.screen_w + self.asteroid_w / 2:
             x = -self.asteroid_w / 2
             print("right")
 
@@ -152,5 +152,13 @@ class Asteroid(pygame.sprite.Sprite):
     def draw(self, screen):
         if asteroidgame.AsteroidGame.debug:
             pygame.draw.rect(pygame.display.get_surface(), (150, 0, 30), self.rect, 1)
+
+            # my_font = pygame.font.Font('Fonts//ARCADECLASSIC.TTF', 20)
+            my_font = pygame.font.SysFont('Ariel', 20)
+
+            text_surface = my_font.render("xVel: " + "{0:.2f}".format(self.velocity.x), False, (150, 0, 30))
+            screen.blit(text_surface, self.rect.move(self.rect.w + 5, 0))
+            text_surface = my_font.render("yVel: " + "{0:.2f}".format(self.velocity.y), False, (150, 0, 30))
+            screen.blit(text_surface, self.rect.move(self.rect.w + 5, 15))
 
         screen.blit(self.image, self.rect.center)
