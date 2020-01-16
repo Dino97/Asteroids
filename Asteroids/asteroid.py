@@ -9,16 +9,10 @@ class Asteroid(pygame.sprite.Sprite):
     def __init__(self, player, speed_increase):
         super().__init__()
         self.original_img = pygame.image.load('images/asteroid.png')
-        self.image = pygame.image.load('images/asteroid.png')
-        self.rect = self.original_img.get_rect()
-
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.asteroid_w, self.asteroid_h = self.original_img.get_size()
         self.player_x, self.player_y = player.rect.center
-
-        self.rect.center = self.get_random_coordinates()
-
-        self.speed = 150 + speed_increase
+        self.speed = 250 + speed_increase
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
         # zatrebace posle
@@ -26,6 +20,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rotate_degrees_total = 0
         self.turning_speed = 5
         self.degrees = 0
+        self.get_random_coordinates()
         self.get_angle_towards_player()
 
         self.mask = pygame.mask.from_surface(self.image)
@@ -101,17 +96,32 @@ class Asteroid(pygame.sprite.Sprite):
             self.points = 100
 
         self.rect = self.image.get_rect()
-
         choice = random.choice([1, 2, 3, 4])
 
         if choice == 1:
-            return 0 + 5, random.randint(0, self.screen_h)
+            x = 0 + 5
+            y = random.randint(0, self.screen_h)
+            self.rect.right = x
+            self.rect.bottom = y
+            return x, y
         elif choice == 2:
-            return self.screen_w - 5 , random.randint(0, self.screen_h)
+            x = self.screen_w - 5
+            y = random.randint(0, self.screen_h)
+            self.rect.right = x
+            self.rect.bottom = y
+            return x, y
         elif choice == 3:
-            return random.randint(0, self.screen_w), 0 + 5
+            x = random.randint(0, self.screen_w)
+            y = 0 + 5
+            self.rect.right = x
+            self.rect.bottom = y
+            return x, y
         elif choice == 4:
-            return random.randint(0, self.screen_w), self.screen_h - 5
+            x = random.randint(0, self.screen_w)
+            y = self.screen_h - 5
+            self.rect.right = x
+            self.rect.bottom = y
+            return x, y
 
     def get_angle_towards_player(self):
         x, y = self.rect.center
@@ -126,6 +136,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.velocity.y = self.speed * math.sin(rads)/100
 
     def move(self):
+
         x, y = self.rect.center
 
         # bottom edge
@@ -147,7 +158,9 @@ class Asteroid(pygame.sprite.Sprite):
 
         x += self.velocity.x
         y += self.velocity.y
+        self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def draw(self, screen):
         if asteroidgame.AsteroidGame.debug:
@@ -161,4 +174,4 @@ class Asteroid(pygame.sprite.Sprite):
             text_surface = my_font.render("yVel: " + "{0:.2f}".format(self.velocity.y), False, (150, 0, 30))
             screen.blit(text_surface, self.rect.move(self.rect.w + 5, 15))
 
-        screen.blit(self.image, self.rect.center)
+        screen.blit(self.image, self.rect)

@@ -45,4 +45,4 @@ class Laser(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def draw(self, screen):
-        screen.blit(self.image, self.rect.center)
+        screen.blit(self.image, self.rect)
