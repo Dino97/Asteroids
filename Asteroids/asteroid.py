@@ -12,7 +12,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.asteroid_w, self.asteroid_h = self.original_img.get_size()
         self.player_x, self.player_y = player.rect.center
-        self.speed = 1500 + speed_increase
+        self.speed = 250 + speed_increase
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
         # zatrebace posle
