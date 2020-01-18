@@ -5,6 +5,7 @@ import pygame
 from player import Player
 from laser import Laser
 from asteroid import Asteroid
+from scoremanager import ScoreManager
 
 BATTLESHIP1_PATH = "images/spaceships/battleship1.png"
 BATTLESHIP2_PATH = "images/spaceships/battleship2.png"
@@ -14,6 +15,8 @@ BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 class AsteroidGame:
     debug = True
+
+    STARTING_ASTEROIDS = 3
 
     def __init__(self):
 
@@ -28,12 +31,13 @@ class AsteroidGame:
 
         # game assets - pocetni nivo, igraci, asteroidi, laseri
         self.level = 0
+        self.num_of_asteroids = 0
+        self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
+
         self.players = pygame.sprite.Group()
         self.players_dead = pygame.sprite.Group()
         self.lasers = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-        self.num_of_asteroids = 0
-        self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
 
         self.game_over = False
         self.level_complete = True
@@ -79,7 +83,6 @@ class AsteroidGame:
             return True
 
         # dodala sam u start_level() metodi promenu da se zapravo menja level_complete
-
         if self.level_complete and not self.completed_pause:
             self.start_level()
             return True
@@ -104,17 +107,20 @@ class AsteroidGame:
         if self.completed_pause:
             screens.level_clear_and_complete_screen(self, screen)
 
+        self.players.update()
+
         return True
 
     def start_game(self, screen):
         self.level = 1
-        self.game_started = True
-        # move self.players.add(Player(1, 0))
         self.asteroids.empty()
         self.lasers.empty()
-        self.num_of_asteroids = 10
-        self.start_level()
         self.game_over = False
+        self.game_started = True
+        self.start_level()
+
+        self.score_manager = ScoreManager()
+        self.score_manager.start()
 
     def check_game_state(self):
         for player in self.players.sprites():
@@ -162,9 +168,9 @@ class AsteroidGame:
 
     # pocetak svakog nivoa, ovde ce se hendlovati promena nivoa i brzine itd
     def start_level(self):
-        self.level = self.level + 1  # treba da se ubaci mod 25 za infinite loop
-        self.num_of_asteroids = 2
-        # background = self.backgrounds(self.level)
+        self.level += 1  # treba da se ubaci mod 25 za infinite loop
+        self.num_of_asteroids = AsteroidGame.STARTING_ASTEROIDS + self.level // 2
+        print(self.level)
 
         self.spawn_asteroids()
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
@@ -181,7 +187,7 @@ class AsteroidGame:
         # promeni iz if u when da ne bi spawnovao samo jedan ako se iskljucuje event
 
         if self.num_of_asteroids > 0 and not self.game_pause:
-            self.asteroids.add(Asteroid(self.players.sprites()[0],self.increase_asteroid_speed))
+            self.asteroids.add(Asteroid(self.players.sprites()[0], self.increase_asteroid_speed))
             self.num_of_asteroids -= 1
 
     def _draw_scores_and_lives(self, screen):
@@ -190,7 +196,7 @@ class AsteroidGame:
         for player in self.players.sprites():
             serial_num = player.player_id - 1
 
-            text_surface = my_font.render(player.name + ": " + str(player.points), False, (0, 0, 0))
+            text_surface = my_font.render(player.name + ": " + str(self.score_manager.get_score(serial_num)), False, (0, 0, 0))
             section_height = text_surface.get_height() + self.player_pictures[serial_num].get_height()
             screen.blit(text_surface, (0, serial_num * section_height))
 
@@ -215,6 +221,7 @@ class AsteroidGame:
             for laser, asteroid in collided_units.items():
                 if asteroid[0].points > 100:
                     asteroid[0].death(asteroid[0], self.asteroids)
+                    self.score_manager.add_score(0, 100)
                 for player in self.players.sprites():
                     if player.player_id == laser.player_id:
                         player.points += asteroid[0].points

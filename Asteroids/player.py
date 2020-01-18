@@ -122,6 +122,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.mask = pygame.mask.from_surface(self.image)
 
+    def update(self, *args):
+        pass
+
     def restrict_speed(self):
         adj, op = self.velocity
         if math.hypot(adj, op) > self.top_speed:
