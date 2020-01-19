@@ -168,7 +168,7 @@ def choose_your_own_player_screen(self, screen):
                     if currently_selecting_player_id + 1 >= self.number_of_players:
                         self.choose_your_own_player = False
 
-                    self.players.add(Player(1, currently_selecting_player_id * 100, self.player_name, self.player_color))
+                    self.players.add(Player(currently_selecting_player_id + 1, currently_selecting_player_id * 100, self.player_names[currently_selecting_player_id], self.player_color))
 
                 if event.key == pygame.K_LEFT:
                     if self.counter == 1:

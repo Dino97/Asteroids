@@ -9,9 +9,11 @@ class Asteroid(pygame.sprite.Sprite):
     def __init__(self, player, speed_increase):
         super().__init__()
         self.original_img = pygame.image.load('images/asteroid.png')
+
         self.screen_w, self.screen_h = pygame.display.get_surface().get_size()
         self.asteroid_w, self.asteroid_h = self.original_img.get_size()
         self.player_x, self.player_y = player.rect.center
+
         self.speed = 250 + speed_increase
         self.acceleration = self.speed * 3
         self.velocity = pygame.Vector2()
@@ -25,6 +27,8 @@ class Asteroid(pygame.sprite.Sprite):
         self.get_angle_towards_player()
 
         self.mask = pygame.mask.from_surface(self.image)
+
+        self.max_split_angle = math.pi / 4
 
     def set_speed(self,speed_increase):
         if self.points == 200:
@@ -149,11 +153,10 @@ class Asteroid(pygame.sprite.Sprite):
         self.velocity.y = self.speed * math.sin(rads)/100
 
     def move(self):
-
         x, y = self.rect.center
 
         # bottom edge
-        if y >= self.screen_h + self.asteroid_h / 2:
+        if y > self.screen_h + self.asteroid_h / 2:
             y = -self.asteroid_h / 2
             print("bottom")
         # top edge
@@ -165,7 +168,7 @@ class Asteroid(pygame.sprite.Sprite):
             x = self.screen_w + self.asteroid_w / 2
             print("left")
         # right edge
-        elif x >= self.screen_w + self.asteroid_w / 2:
+        elif x > self.screen_w + self.asteroid_w / 2:
             x = -self.asteroid_w / 2
             print("right")
 
@@ -179,4 +182,22 @@ class Asteroid(pygame.sprite.Sprite):
         if asteroidgame.AsteroidGame.debug:
             pygame.draw.rect(pygame.display.get_surface(), (150, 0, 30), self.rect, 1)
 
+            # my_font = pygame.font.Font('Fonts//ARCADECLASSIC.TTF', 20)
+            my_font = pygame.font.SysFont('Ariel', 20)
+
+            text_surface = my_font.render("xVel: " + "{0:.2f}".format(self.velocity.x), False, (150, 0, 30))
+            screen.blit(text_surface, self.rect.move(self.rect.w + 5, 0))
+            text_surface = my_font.render("yVel: " + "{0:.2f}".format(self.velocity.y), False, (150, 0, 30))
+            screen.blit(text_surface, self.rect.move(self.rect.w + 5, 15))
+
         screen.blit(self.image, self.rect)
+
+    def set_level(self, level):
+        if level == 0:
+            pass
+        elif level == 1:
+            pass
+        elif level == 2:
+            pass
+        else:
+            print("[Asteroid.set_level]: argument \"level\" invalid value " + str(level))
