@@ -65,6 +65,8 @@ class AsteroidGame:
         self.player_names = ["", "", "", ""]
         self.player_colors = [-1, -1, -1, -1]
 
+        self.score_manager = None
+
     def play(self, screen):
         if self.main_menu:
             screens.main_menu_screen(self, screen)
@@ -108,6 +110,7 @@ class AsteroidGame:
             screens.level_clear_and_complete_screen(self, screen)
 
         self.players.update()
+        self.asteroids.update()
 
         return True
 
@@ -191,17 +194,21 @@ class AsteroidGame:
             self.num_of_asteroids -= 1
 
     def _draw_scores_and_lives(self, screen):
+        # Biraj, ovaj Vera je malo cudan sa prvim slovom
+        # my_font = pygame.font.Font('fonts/ARCADECLASSIC.TTF', 30)
         my_font = pygame.font.SysFont('Vera', 30)
 
         for player in self.players.sprites():
             serial_num = player.player_id - 1
 
-            text_surface = my_font.render(player.name + ": " + str(self.score_manager.get_score(serial_num)), False, (0, 0, 0))
+            label_text = player.name + ": " + str(self.score_manager.get_score(serial_num))
+            text_surface = my_font.render(label_text, False, (0, 0, 0))
             section_height = text_surface.get_height() + self.player_pictures[serial_num].get_height()
             screen.blit(text_surface, (0, serial_num * section_height))
 
             for x in range(player.lives):
-                screen.blit(self.player_pictures[serial_num], (32*x, serial_num * section_height + text_surface.get_height()))
+                player_picture_id = self.player_colors[serial_num]
+                screen.blit(self.player_pictures[player_picture_id], (32*x, serial_num * section_height + text_surface.get_height()))
 
     def _determine_collides(self):
         for player in self.players.sprites():

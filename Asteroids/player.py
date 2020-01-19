@@ -62,27 +62,7 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.points = 0
 
-    def limit_exiting(self):
-        x, y = self.rect.center
-
-        # left edge
-        if x < -self.player_w / 2:
-            x = self.screen_w + self.player_w / 2
-        # right edge
-        elif x > self.screen_w + self.player_w / 2:
-            x = -self.player_w / 2
-
-        # top edge
-        if y < -self.player_h / 2:
-            y = self.screen_h + self.player_h / 2
-        # bottom edge
-        elif y > self.screen_h + self.player_h / 2:
-            y = -self.player_h / 2
-
-        self.rect.center = (x, y)
-
     def rotate(self):
-
         self.rotate_degrees_total += self.rotate_degrees
         self.rotate_degrees_total %= 360
         self.image = pygame.transform.rotate(self.original_img, self.rotate_degrees_total)
@@ -115,7 +95,6 @@ class Player(pygame.sprite.Sprite):
         x, y = self.rect.center
         # vaj ovo mora da bude, provali wtf radi na drugom kodu msm nema smisla stvarno znaci ono -
         x -= self.velocity[0]
-        #
         y += self.velocity[1]
 
         # change position
@@ -133,6 +112,25 @@ class Player(pygame.sprite.Sprite):
             self.velocity[1] = self.top_speed*math.sin(angle)
 
     def move(self):
+        # handle player wraping on edges
+        x, y = self.rect.center
+
+        # left edge
+        if x < -self.player_w / 2:
+            x = self.screen_w + self.player_w / 2
+        # right edge
+        elif x > self.screen_w + self.player_w / 2:
+            x = -self.player_w / 2
+
+        # top edge
+        if y < -self.player_h / 2:
+            y = self.screen_h + self.player_h / 2
+        # bottom edge
+        elif y > self.screen_h + self.player_h / 2:
+            y = -self.player_h / 2
+
+        self.rect.center = (x, y)
+
         self.rotate()
         self.thrust()
 
@@ -151,7 +149,10 @@ class Player(pygame.sprite.Sprite):
         if asteroidgame.AsteroidGame.debug:
             pygame.draw.rect(pygame.display.get_surface(), (150, 0, 30), self.rect, 1)
 
-        self.limit_exiting()
+            line_origin = self.rect.center
+            line_end = (self.rect.center[0] + self.velocity[0] * 10, self.rect.center[1] + self.velocity[1] * 10)
+
+            pygame.draw.line(pygame.display.get_surface(), (150, 0, 30), line_origin, line_end)
 
     def clean(self):
         # movement variables
