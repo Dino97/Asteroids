@@ -224,20 +224,34 @@ def over_screen(self, screen):
     text_surface_rect = text_surface.get_rect(center=(self.screen_w / 2, 100))
     screen.blit(text_surface, text_surface_rect)
 
+    # find player with most points
+    player_scores = [self.score_manager.get_score(0),
+                     self.score_manager.get_score(1),
+                     self.score_manager.get_score(2),
+                     self.score_manager.get_score(3)]
+    best_player_id = player_scores.index(max(player_scores))
+
     for player in self.players_dead.sprites():
-        text_surface = my_font.render(str(player.points), False, (255, 255, 255))
+        # display score text
+        text_surface = my_font.render(str(self.score_manager.get_score(player.player_id - 1)), False, (255, 255, 255))
         text_surface_rect = text_surface.get_rect(topright=(self.screen_w / 2 - 20, 100 + 50 * player.player_id))
         screen.blit(text_surface, text_surface_rect)
 
-        text_surface = my_font.render(player.name, False, (255, 255, 255))
+        # display name text
+        player_name = player.name
+
+        if player.player_id == best_player_id + 1 and self.number_of_players > 1:
+            player_name += "   winner"
+
+        text_surface = my_font.render(player_name, False, (255, 255, 255))
         text_surface_rect = text_surface.get_rect(topleft=(self.screen_w / 2 + 10, 100 + 50 * player.player_id))
         screen.blit(text_surface, text_surface_rect)
 
-        surface = pygame.transform.rotate(player.original_img, -30)
-        surface_rect = surface.get_rect(topleft=(self.screen_w/2 - 160, 100 + 50 * player.player_id))
-        screen.blit(surface, surface_rect)
+        # display player image
+        surface_rect = player.original_img.get_rect(topleft=(self.screen_w/2 - 160, 100 + 50 * player.player_id))
+        screen.blit(player.original_img, surface_rect)
 
-    screen.blit(pygame.transform.smoothscale(pygame.transform.rotate(self.players_dead.sprites()[0].original_img, -90), (32,32)),(220, 310 + 100 * self.counter))
+    screen.blit(pygame.transform.scale(pygame.transform.rotate(self.players_dead.sprites()[0].original_img, -90), (32,32)),(220, 310 + 100 * self.counter))
 
     text_surface = my_font.render("TRY AGAIN", False, (255, 255, 255))
     screen.blit(text_surface, (250, 300))

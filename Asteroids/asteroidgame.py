@@ -229,8 +229,5 @@ class AsteroidGame:
             for laser, asteroid in collided_units.items():
                 if asteroid[0].points > 100:
                     asteroid[0].death(asteroid[0], self.asteroids)
-                #for player in self.players.sprites():
-                #    if player.player_id == laser.player_id:
-                #        player.points += asteroid[0].points
 
                 self.score_manager.add_score(laser.player_id - 1, asteroid[0].points)
