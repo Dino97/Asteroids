@@ -6,6 +6,7 @@ from player import Player
 from laser import Laser
 from asteroid import Asteroid
 from scoremanager import ScoreManager
+from inputmanager import InputManager
 
 BATTLESHIP1_PATH = "images/spaceships/battleship1.png"
 BATTLESHIP2_PATH = "images/spaceships/battleship2.png"
@@ -15,8 +16,9 @@ BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 class AsteroidGame:
     debug = True
+    input_manager = InputManager()
 
-    STARTING_ASTEROIDS = 3
+    STARTING_ASTEROIDS = 0
 
     def __init__(self):
 
@@ -91,6 +93,8 @@ class AsteroidGame:
 
         screen.blit(self.current_background, [0, 0])
 
+        AsteroidGame.input_manager.poll_events()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -99,17 +103,15 @@ class AsteroidGame:
             elif event.type == self.move_sprites:
                 self._move_all_sprites()
 
-            for i in range(0, self.number_of_players):
-                self.listen_to_keys(event, self.players.sprites()[i])  # zasad samo jedan igrac posto tek kad napravimo mrezno sa vise igraca
-
         self._determine_collides()
         self._draw_all_sprites(screen)
         self._draw_scores_and_lives(screen)
         self.check_game_state()
+
         if self.completed_pause:
             screens.level_clear_and_complete_screen(self, screen)
 
-        self.players.update()
+        self.players.update(self.lasers)
         self.asteroids.update()
 
         return True
@@ -160,10 +162,9 @@ class AsteroidGame:
 
     def _move_all_sprites(self):
         for player in self.players.sprites():
-            player.move() # svaki igrac sebe ogranici da ne izadje
+            player.move()
 
         for asteroid in self.asteroids.sprites():
-            # make bounce logic
             asteroid.move()
 
         for laser in self.lasers.sprites():
@@ -232,49 +233,3 @@ class AsteroidGame:
                 for player in self.players.sprites():
                     if player.player_id == laser.player_id:
                         player.points += asteroid[0].points
-
-    def listen_to_keys(self, event, player):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                self.game_pause = not self.game_pause
-            if event.key == pygame.K_LEFT:
-                player.left_bool = True
-                if player.right_bool:
-                    player.rotate_degrees = 0
-                else:
-                    player.rotate_degrees = player.turning_speed
-
-            if event.key == pygame.K_RIGHT:
-                player.right_bool = True
-                if player.left_bool:
-                    player.rotate_degrees = 0
-                else:
-                    player.rotate_degrees = -player.turning_speed
-
-            if event.key == pygame.K_LCTRL:
-                player.up_bool = True
-
-        if event.type == pygame.KEYUP:
-
-            if event.key == pygame.K_LEFT:
-
-                player.left_bool = False
-                if player.right_bool:
-                    player.rotate_degrees = -player.turning_speed
-                else:
-                    player.rotate_degrees = 0
-
-            if event.key == pygame.K_RIGHT:
-                player.right_bool = False
-                if player.left_bool:
-                    player.rotate_degrees = player.turning_speed
-                else:
-                    player.rotate_degrees = 0
-
-            if event.key == pygame.K_LCTRL:
-                player.up_bool = False
-                #player.original_img = pygame.image.load('flying-rocket64_expertly_edited.png')
-
-            if event.key == pygame.K_SPACE:
-                x, y = player.rect.center
-                self.lasers.add(Laser(player))

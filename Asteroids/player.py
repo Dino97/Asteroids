@@ -1,6 +1,7 @@
 import math
 import pygame
 import asteroidgame
+import laser
 
 
 class Player(pygame.sprite.Sprite):
@@ -62,6 +63,30 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.points = 0
 
+        thrust_key = rotate_left_key = rotate_right_key = fire_key = None
+
+        # setup input map
+        if self.player_id == 1:
+            self.thrust_key             = pygame.K_UP
+            self.rotate_left_key        = pygame.K_LEFT
+            self.rotate_right_key       = pygame.K_RIGHT
+            self.fire_key               = pygame.K_RCTRL
+        elif self.player_id == 2:
+            self.thrust_key             = pygame.K_w
+            self.rotate_left_key        = pygame.K_a
+            self.rotate_right_key       = pygame.K_d
+            self.fire_key               = pygame.K_LCTRL
+        elif self.player_id == 3:
+            self.thrust_key             = pygame.K_KP8
+            self.rotate_left_key        = pygame.K_KP4
+            self.rotate_right_key       = pygame.K_KP6
+            self.fire_key               = pygame.K_KP0
+        elif self.player_id == 4:
+            self.thrust_key             = pygame.K_i
+            self.rotate_left_key        = pygame.K_j
+            self.rotate_right_key       = pygame.K_l
+            self.fire_key               = pygame.K_RALT
+
     def rotate(self):
         self.rotate_degrees_total += self.rotate_degrees
         self.rotate_degrees_total %= 360
@@ -72,7 +97,6 @@ class Player(pygame.sprite.Sprite):
     def thrust(self):
         # also dont know why 270
         rads = math.radians(self.rotate_degrees_total + 270)
-        #
 
         if self.up_bool:
             self.velocity[0] += self.acceleration*math.cos(rads)/10000
@@ -102,7 +126,23 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, *args):
-        pass
+        input_manager = asteroidgame.AsteroidGame.input_manager
+
+        self.up_bool = input_manager.get_key(self.thrust_key)
+        self.left_bool = input_manager.get_key(self.rotate_left_key)
+        self.right_bool = input_manager.get_key(self.rotate_right_key)
+
+        # handle rotation speed
+        if self.left_bool and not self.right_bool:
+            self.rotate_degrees = self.turning_speed
+        elif self.right_bool and not self.left_bool:
+            self.rotate_degrees = -self.turning_speed
+        else:
+            self.rotate_degrees = 0
+
+        # handle shooting
+        if input_manager.get_key_down(self.fire_key):
+            args[0].add(laser.Laser(self))
 
     def restrict_speed(self):
         adj, op = self.velocity
