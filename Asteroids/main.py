@@ -10,7 +10,7 @@ if __name__ == '__main__':
     game_clock = pygame.time.Clock()
 
     # create screen
-    screen = pygame.display.set_mode((1280, 720))
+    screen = pygame.display.set_mode((1024, 642))
     asteroid_game = AsteroidGame()
 
     # set icon

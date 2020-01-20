@@ -251,10 +251,10 @@ def over_screen(self, screen):
         surface_rect = player.original_img.get_rect(topleft=(self.screen_w/2 - 160, 100 + 50 * player.player_id))
         screen.blit(player.original_img, surface_rect)
 
-    screen.blit(pygame.transform.scale(pygame.transform.rotate(self.players_dead.sprites()[0].original_img, -90), (32,32)),(220, 310 + 100 * self.counter))
+    screen.blit(pygame.transform.scale(pygame.transform.rotate(self.players_dead.sprites()[0].original_img, -90), (32,32)),(210, 410 + 100 * self.counter))
 
-    text_surface = my_font.render("TRY AGAIN", False, (255, 255, 255))
-    screen.blit(text_surface, (250, 300))
+    # text_surface = my_font.render("TRY AGAIN", False, (255, 255, 255))
+    # screen.blit(text_surface, (250, 300))
 
     text_surface = my_font.render("MAIN MENU", False, (255, 255, 255))
     screen.blit(text_surface, (250, 400))
@@ -265,24 +265,24 @@ def over_screen(self, screen):
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                if self.counter < 2:
+                if self.counter < 1:
                     self.counter += 1
             if event.key == pygame.K_UP:
                 if self.counter > 0:
                     self.counter -= 1
             if event.key == pygame.K_RETURN:
                 if self.counter == 0:
-                    self.game_started = False
-                    self.players_dead.sprites()[0].clean()
-                    self.players.add(self.players_dead.sprites()[0])
-                if self.counter == 1:
                     self.players.empty()
                     self.main_menu = True
                     self.counter = 0
-                if self.counter == 2:
+                    self.game_over = False
+                    self.game_started = False
+                    self.players_dead.empty()
+                    self.player_name = ""
+                    self.number_of_players_set = False
+                    self.player_names = ["", "", "", ""]
+                    self.player_colors = [-1, -1, -1, -1]
+                    self.score_manager.close()
+                if self.counter == 1:
                     pygame.quit()
                     sys.exit()
-                self.game_over = False
-                self.game_started = False
-                self.players_dead.empty()
-                self.player_name = ""

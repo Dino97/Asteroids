@@ -49,5 +49,5 @@ class ScoreManager:
         self._master_pipe.send(["get", player_id])
         return self._master_pipe.recv()
 
-    def reset(self):
-        pass
+    def close(self):
+        self._master_pipe.send(["close"])

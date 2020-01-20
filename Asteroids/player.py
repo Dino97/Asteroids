@@ -117,7 +117,6 @@ class Player(pygame.sprite.Sprite):
         self.restrict_speed()
 
         x, y = self.rect.center
-        # vaj ovo mora da bude, provali wtf radi na drugom kodu msm nema smisla stvarno znaci ono -
         x -= self.velocity[0]
         y += self.velocity[1]
 

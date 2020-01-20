@@ -15,7 +15,7 @@ BATTLESHIP4_PATH = "images/spaceships/battleship4.png"
 
 
 class AsteroidGame:
-    debug = True
+    debug = False
     input_manager = InputManager()
 
     STARTING_ASTEROIDS = 3
@@ -178,15 +178,17 @@ class AsteroidGame:
         self.level += 1  # treba da se ubaci mod 25 za infinite loop
         self.num_background = str(self.level % 2 + 1)
         self.background = pygame.image.load('images/background_level_'+self.num_background+'.png')
-        self.current_background = pygame.transform.smoothscale(self.background, (self.screen_w, self.screen_h))
+        self.current_background = pygame.transform.scale(self.background, (self.screen_w, self.screen_h))
 
         self.num_of_asteroids = AsteroidGame.STARTING_ASTEROIDS + self.level // 2
-        print(self.level)
 
         self.spawn_asteroids()
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
         for player in self.players.sprites():
             player.cleanfornextlevel()
+            player.speed *= 20
+            player.top_speed *= 20
+            player.turning_speed *= 1.1
         self.level_complete = False
 
         self.increase_asteroid_speed = self.level * 50
@@ -202,15 +204,20 @@ class AsteroidGame:
             self.num_of_asteroids -= 1
 
     def _draw_scores_and_lives(self, screen):
-        # Biraj, ovaj Vera je malo cudan sa prvim slovom
-        # my_font = pygame.font.Font('fonts/ARCADECLASSIC.TTF', 30)
+        ship_colors_rgb = [
+            (69, 79, 110),
+            (233, 161, 74),
+            (151, 189, 37),
+            (140, 37, 178)
+        ]
+
         my_font = pygame.font.SysFont('Vera', 30)
 
         for player in self.players.sprites():
             serial_num = player.player_id - 1
 
             label_text = player.name + ": " + str(self.score_manager.get_score(serial_num))
-            text_surface = my_font.render(label_text, False, (0, 0, 0))
+            text_surface = my_font.render(label_text, False, ship_colors_rgb[serial_num])
             section_height = text_surface.get_height() + self.player_pictures[serial_num].get_height()
             screen.blit(text_surface, (0, serial_num * section_height))
 
