@@ -2,11 +2,13 @@ import math
 import sys
 import screens
 import pygame
+import random
 from player import Player
 from laser import Laser
 from asteroid import Asteroid
 from scoremanager import ScoreManager
 from inputmanager import InputManager
+from supernova import Supernova
 
 BATTLESHIP1_PATH = "images/spaceships/battleship1.png"
 BATTLESHIP2_PATH = "images/spaceships/battleship2.png"
@@ -48,12 +50,13 @@ class AsteroidGame:
         # timed events
         self.asteroid_spawn = pygame.USEREVENT + 1
         self.move_sprites = pygame.USEREVENT + 2
+        self.supernova_event = pygame.USEREVENT + 3
         self.increase_asteroid_speed = 0
         self.increase_player_speed = 0
 
         self.num_background = str(1)
         self.background = pygame.image.load('images/background_level_' + self.num_background + '.png')
-        self.current_background = pygame.transform.smoothscale(self.background, (self.screen_w, self.screen_h))
+        self.current_background = pygame.transform.scale(self.background, (self.screen_w, self.screen_h))
 
         self.backgrounds = None
         self.players_immune_to_damage_duration = 3000
@@ -64,11 +67,13 @@ class AsteroidGame:
         self.game_pause = False
 
         self.main_menu = True
-        self.player_icon = pygame.transform.smoothscale(pygame.image.load('images/galaga.png'), (64, 48))
+        self.player_icon = pygame.transform.scale(pygame.image.load('images/galaga.png'), (64, 48))
         self.choose_your_own_player = False
         self.player_name = ""
         self.player_names = ["", "", "", ""]
         self.player_colors = [-1, -1, -1, -1]
+
+        self.supernova = None
 
         self.score_manager = None
 
@@ -105,6 +110,9 @@ class AsteroidGame:
                 self.spawn_asteroids()
             elif event.type == self.move_sprites:
                 self._move_all_sprites()
+            elif event.type == self.supernova_event:
+                random_pos = (random.randint(0, self.screen_w), random.randint(0, self.screen_h))
+                self.supernova = Supernova(random_pos)
 
         self._determine_collides()
         self._draw_all_sprites(screen)
@@ -116,6 +124,23 @@ class AsteroidGame:
 
         self.players.update(self.lasers)
         self.asteroids.update()
+
+        # if supernova exists, update it and check for explosion
+        if self.supernova is not None:
+            self.supernova.update(screen)
+
+            if pygame.time.get_ticks() - self.supernova.spawn_time > Supernova.PULSE_DURATION:
+                players_in_supernova = pygame.sprite.spritecollide(self.supernova, self.players, False)
+
+                # knockback for players
+                for player in players_in_supernova:
+                    sn_center = self.supernova.rect.center
+                    pl_center = player.rect.center
+                    direction = pygame.math.Vector2(sn_center[0] - pl_center[0], sn_center[1] - pl_center[1])
+                    direction = direction.normalize()
+                    player.velocity = [player.velocity[0] + 10 * direction.x, player.velocity[1] + -10 * direction.y]
+
+                self.supernova = None
 
         return True
 
@@ -181,13 +206,13 @@ class AsteroidGame:
         self.current_background = pygame.transform.scale(self.background, (self.screen_w, self.screen_h))
 
         self.num_of_asteroids = AsteroidGame.STARTING_ASTEROIDS + self.level // 2
+        self.supernova = None
 
         self.spawn_asteroids()
         # da se ne bi asteroidi spawnovali u beskonacno nego samo na pocetku nivoa
         for player in self.players.sprites():
             player.cleanfornextlevel()
-            player.speed *= 20
-            player.top_speed *= 20
+            player.speed += self.level * 500
             player.turning_speed *= 1.1
         self.level_complete = False
 
@@ -195,6 +220,7 @@ class AsteroidGame:
         self.increase_player_speed = self.level * 50
         pygame.time.set_timer(self.asteroid_spawn, 1000)
         pygame.time.set_timer(self.move_sprites, 35)
+        pygame.time.set_timer(self.supernova_event, random.randint(5000, 10000))
 
     def spawn_asteroids(self):
         # promeni iz if u when da ne bi spawnovao samo jedan ako se iskljucuje event
