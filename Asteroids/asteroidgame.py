@@ -50,7 +50,10 @@ class AsteroidGame:
         self.move_sprites = pygame.USEREVENT + 2
         self.increase_asteroid_speed = 0
         self.increase_player_speed = 0
-        self.current_background = pygame.transform.smoothscale(pygame.image.load('images/background_level_1.png'), (self.screen_w, self.screen_h))
+
+        self.num_background = str(1)
+        self.background = pygame.image.load('images/background_level_' + self.num_background + '.png')
+        self.current_background = pygame.transform.smoothscale(self.background, (self.screen_w, self.screen_h))
 
         self.backgrounds = None
         self.players_immune_to_damage_duration = 3000
@@ -173,6 +176,10 @@ class AsteroidGame:
     # pocetak svakog nivoa, ovde ce se hendlovati promena nivoa i brzine itd
     def start_level(self):
         self.level += 1  # treba da se ubaci mod 25 za infinite loop
+        self.num_background = str(self.level % 2 + 1)
+        self.background = pygame.image.load('images/background_level_'+self.num_background+'.png')
+        self.current_background = pygame.transform.smoothscale(self.background, (self.screen_w, self.screen_h))
+
         self.num_of_asteroids = AsteroidGame.STARTING_ASTEROIDS + self.level // 2
         print(self.level)
 
